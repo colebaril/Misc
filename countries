@@ -1,0 +1,30 @@
+library(tidyverse)
+library(here)
+library(readxl)
+library(janitor)
+
+
+df <- read_excel(here("Test.xlsx"),
+                 sheet = "PS") %>% 
+  row_to_names(3)
+
+df2 <- df %>% 
+  pivot_longer(!lab_code & !device, names_to = "session") %>% 
+  separate(lab_code,
+           into = c("country", "num"),
+           sep = "(?<=[A-Za-z])(?=[0-9])",
+           remove = FALSE) %>% 
+  select(-3)
+
+# Do the above for all countries, and then simply use rbind on all the dfs. 
+# Normally, I would read in all excel files together. However, they are not all the same, so the data should be visually inspected on a case by case basis before being read in.
+
+# Consider the following:
+
+# To create new df
+df <- rbind(df1, df2, df3)
+
+# To save the file
+write.csv(rbind(df1, df2, df3), "filename.csv")
+
+# Depending on what the data looks like, we can create scripts to generate graphics using whatever combo of variables (e.g., by session, site, country). 
